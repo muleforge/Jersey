@@ -12,10 +12,12 @@
     <xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.0" 
                 schemaLocation="http://www.mulesource.org/schema/mule/core/2.0/mule.xsd" />
 
-    <xsd:element name="connector" type="jerseyConnectorType"/>
+    <xsd:element name="connector" type="jerseyConnectorType" substitutionGroup="mule:abstract-connector"/>
     
     <xsd:complexType name="jerseyConnectorType">
-        <xsd:sequence/>
+        <xsd:complexContent>        
+            <xsd:extension base="mule:connectorType"/>
+        </xsd:complexContent>
     </xsd:complexType>
 
 </xsd:schema>

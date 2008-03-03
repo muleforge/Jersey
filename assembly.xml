@@ -1,0 +1,36 @@
+<!--
+Assembly descriptor for the full distribution.
+-->
+<assembly>
+  <id>jersey</id>
+  <formats>
+    <format>dir</format>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>examples</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <!-- Mule libraries -->
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useTransitiveFiltering>useTransitiveFiltering</useTransitiveFiltering>
+      <excludes>
+        <exclude>org.mule.transports:mule-transport-jersey</exclude>
+        <exclude>jetty:org.mortbay.jetty</exclude>
+        <exclude>jaxen:jaxen</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
