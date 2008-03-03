@@ -10,6 +10,13 @@
         <mule.version>2.0.0-RC2</mule.version>
     </properties>
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -54,6 +61,11 @@
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${mule.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-client</artifactId>
             <version>${mule.version}</version>
             <scope>test</scope>
@@ -84,4 +96,23 @@
             <layout>legacy</layout>
         </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>muleforge.webdav.releases</id>
+            <url>
+                dav:https://dav.muleforge.org/repository/${artifactId}/
+            </url>
+        </repository>
+        <snapshotRepository>
+            <id>muleforge.webdav.snapshots</id>
+            <url>
+                dav:https://dav.muleforge.org/snapshots.repository/${artifactId}/
+            </url>
+        </snapshotRepository>
+        <site>
+            <id>muleforge.webdav.sites</id>
+            <url>dav:https://dav.muleforge.org/${artifactId}/</url>
+        </site>
+    </distributionManagement>
+
 </project>

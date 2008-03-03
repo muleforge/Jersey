@@ -20,17 +20,26 @@ Assembly descriptor for the full distribution.
       <directory>examples</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory></directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>LICENSE.txt</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <!-- Mule libraries -->
     <dependencySet>
-      <outputDirectory>lib</outputDirectory>
-      <useTransitiveFiltering>useTransitiveFiltering</useTransitiveFiltering>
+      <outputDirectory></outputDirectory>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.mule.transports:mule-transport-jersey</exclude>
-        <exclude>jetty:org.mortbay.jetty</exclude>
-        <exclude>jaxen:jaxen</exclude>
+        <exclude>org.mule:mule-core</exclude>
+        <exclude>org.mule.transports:mule-transport-http</exclude>
+        <exclude>org.mule.modules:mule-module-spring-config</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
+  
 </assembly>
