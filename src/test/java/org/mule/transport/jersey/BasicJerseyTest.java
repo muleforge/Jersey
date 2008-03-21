@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mule.api.MuleMessage;
-import org.mule.extras.client.MuleClient;
+import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
-import org.mule.transport.jersey.server.MuleRequestAdaptor;
-import org.mule.transport.jersey.server.MuleResponseAdapter;
 
 public class BasicJerseyTest extends FunctionalTestCase {
 

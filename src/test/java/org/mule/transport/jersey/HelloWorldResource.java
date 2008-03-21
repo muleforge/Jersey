@@ -4,9 +4,9 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.UriParam;
 
 @Path("/helloworld")
 public class HelloWorldResource {
@@ -26,7 +26,7 @@ public class HelloWorldResource {
     @GET
     @ProduceMime("text/plain")
     @Path("/sayHelloWithUri/{name}")
-    public String sayHelloWithUri(@UriParam("name") String name) {
+    public String sayHelloWithUri(@PathParam("name") String name) {
         return "Hello " + name;
     }
     

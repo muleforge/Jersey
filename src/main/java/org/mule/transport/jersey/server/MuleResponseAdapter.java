@@ -23,6 +23,7 @@
 package org.mule.transport.jersey.server;
 
 import com.sun.ws.rest.spi.container.AbstractContainerResponse;
+import com.sun.ws.rest.spi.container.MessageBodyContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,8 +46,8 @@ public final class MuleResponseAdapter extends AbstractContainerResponse {
     private OutputStream out;
     private MuleMessage message;
     
-    public MuleResponseAdapter(MuleRequestAdaptor requestContext) {
-        super(requestContext);
+    public MuleResponseAdapter(MessageBodyContext bodyContext, MuleRequestAdaptor requestContext) {
+        super(bodyContext, requestContext);
         
         this.message = new DefaultMuleMessage(new DefaultMessageAdapter(this));
     }

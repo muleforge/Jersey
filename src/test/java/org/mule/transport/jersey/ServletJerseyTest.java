@@ -9,7 +9,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.util.InetAddrPort;
 import org.mule.api.MuleMessage;
-import org.mule.extras.client.MuleClient;
+import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
