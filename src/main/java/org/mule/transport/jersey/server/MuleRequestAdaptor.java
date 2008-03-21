@@ -22,22 +22,18 @@
 
 package org.mule.transport.jersey.server;
 
-import com.sun.ws.rest.impl.container.servlet.HttpRequestAdaptor;
 import com.sun.ws.rest.spi.container.AbstractContainerRequest;
+import com.sun.ws.rest.spi.container.MessageBodyContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
 
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.EndpointURI;
@@ -53,9 +49,11 @@ public class MuleRequestAdaptor extends AbstractContainerRequest {
     
     /** Creates a new instance of HttpRequestAdaptor 
      * @throws TransformerException */
-    public MuleRequestAdaptor(MuleMessage message, 
+    public MuleRequestAdaptor(MessageBodyContext context,
+                              MuleMessage message, 
                               EndpointURI endpointUri) throws IOException, TransformerException {
-        super((String)message.getProperty(HttpConnector.HTTP_METHOD_PROPERTY), 
+        super(context,
+              (String)message.getProperty(HttpConnector.HTTP_METHOD_PROPERTY), 
               getInputStream(message));
         this.message = message;
         
