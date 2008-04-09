@@ -11,17 +11,16 @@
 package org.mule.transport.jersey;
 
 import com.sun.ws.rest.api.core.DefaultResourceConfig;
-import com.sun.ws.rest.api.core.ResourceConfig;
 import com.sun.ws.rest.spi.container.WebApplication;
 import com.sun.ws.rest.spi.container.WebApplicationFactory;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.mule.api.MuleEventContext;
 import org.mule.api.MuleMessage;
-import org.mule.api.endpoint.Endpoint;
+import org.mule.api.component.JavaComponent;
+import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.Callable;
 import org.mule.api.lifecycle.CreateException;
 import org.mule.api.service.Service;
@@ -40,7 +39,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     
     public JerseyMessageReceiver(Connector connector, 
                                  Service service, 
-                                 Endpoint endpoint)
+                                 InboundEndpoint endpoint)
         throws CreateException {
         super(connector, service, endpoint);
     }
@@ -48,9 +47,11 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     public Object onCall(MuleEventContext event) throws Exception {
         MuleMessage message = event.getMessage();
         
-        MuleRequestAdaptor req = new MuleRequestAdaptor(message, endpoint.getEndpointURI());
+        MuleRequestAdaptor req = new MuleRequestAdaptor(application.getMessageBodyContext(),
+                                                        message, 
+                                                        endpoint.getEndpointURI());
         
-        MuleResponseAdapter res = new MuleResponseAdapter(req);
+        MuleResponseAdapter res = new MuleResponseAdapter(application.getMessageBodyContext(), req);
         
         application.handleRequest(req, res);
         
@@ -63,7 +64,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         final Set<Class> resources = new HashSet<Class>();
         
         try {
-            Class c = service.getServiceFactory().getObjectClass();
+            Class c = ((JavaComponent) service.getComponent()).getObjectType();
             resources.add(c);
         } catch (Exception e) {
             throw new ConnectException(e, this);
@@ -72,7 +73,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         DefaultResourceConfig resourceConfig = new DefaultResourceConfig(resources);
         
         application = WebApplicationFactory.createWebApplication();
-        application.initiate(this, resourceConfig);
+        application.initiate(resourceConfig);
         
         ((JerseyConnector) connector).registerReceiverWithMuleService(this, getEndpointURI());
     }
