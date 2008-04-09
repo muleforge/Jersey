@@ -4,7 +4,7 @@
     <artifactId>mule-transport-jersey</artifactId>
     <packaging>jar</packaging>
     <name>Mule Jersey Transport</name>
-    <version>1.0-M3-SNAPSHOT</version>
+    <version>1.0</version>
     <description>Jersey</description>
     <properties>
         <mule.version>2.0.0</mule.version>
@@ -113,8 +113,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.muleforge.org/mule-transport-jersey/trunk</connection>
-        <developerConnection>scm:svn:https://svn.muleforge.org/mule-transport-jersey/trunk</developerConnection>
-        <url>http://svn.mule-transport-jersey.muleforge.org/</url>
+        <connection>scm:svn:https://svn.muleforge.org/mule-transport-jersey/tags/mule-transport-jersey-1.0</connection>
+        <developerConnection>scm:svn:https://svn.muleforge.org/mule-transport-jersey/tags/mule-transport-jersey-1.0</developerConnection>
+        <url>http://svn.mule-transport-jersey.muleforge.org/tags/mule-transport-jersey-1.0</url>
     </scm>
 </project>
