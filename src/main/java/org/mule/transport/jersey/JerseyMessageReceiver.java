@@ -23,10 +23,11 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleEventContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.component.JavaComponent;
-import org.mule.api.config.MuleProperties;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.Callable;
@@ -43,6 +44,8 @@ import org.mule.transport.http.HttpConnector;
  */
 public class JerseyMessageReceiver extends AbstractMessageReceiver implements Callable {
 
+    protected transient Log logger = LogFactory.getLog(getClass());
+    
     private WebApplication application;
     
     public JerseyMessageReceiver(Connector connector, 
@@ -77,8 +80,11 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
                                                     completeUri,
                                                     headers,
                                                     getInputStream(message));
-        System.out.println("Base " + baseUri);
-        System.out.println("Complete " + completeUri);
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("Base URI: " + baseUri);
+            logger.debug("Complete URI: " + completeUri);
+        }
         
         MuleResponseWriter writer = new MuleResponseWriter();
         ContainerResponse res = new ContainerResponse(application, req, writer);
