@@ -3,17 +3,15 @@ package org.mule.transport.jersey;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.util.InetAddrPort;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.transport.http.HttpConnector;
 import org.mule.transport.http.HttpConstants;
-import org.mule.transport.http.servlet.MuleReceiverServlet;
+import org.mule.transport.servlet.MuleReceiverServlet;
 
 public class ServletJerseyTest extends FunctionalTestCase {
     public static final int HTTP_PORT = 63088;
@@ -23,18 +21,16 @@ public class ServletJerseyTest extends FunctionalTestCase {
     @Override
     protected void doSetUp() throws Exception {
         super.doSetUp();
+        
         httpServer = new Server();
-        SocketListener socketListener = new SocketListener(new InetAddrPort(HTTP_PORT));
-        httpServer.addListener(socketListener);
-
-        HttpContext context = httpServer.getContext("/");
-        context.setRequestLog(null);
+        SelectChannelConnector conn = new SelectChannelConnector();
+        conn.setPort(HTTP_PORT);
+        httpServer.addConnector(conn);
 
         ServletHandler handler = new ServletHandler();
-        handler.addServlet("MuleReceiverServlet", "/*", MuleReceiverServlet.class
-            .getName());
-
-        context.addHandler(handler);
+        handler.addServletWithMapping(MuleReceiverServlet.class, "/*");
+        httpServer.addHandler(handler);
+        
         httpServer.start();
     }
     

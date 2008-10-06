@@ -49,7 +49,6 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
         return protocol.startsWith("jersey:");
     }
     
-    @SuppressWarnings("unchecked")
     protected void registerReceiverWithMuleService(MessageReceiver receiver, EndpointURI ep)
         throws MuleException {
         JerseyMessageReceiver jReceiver = (JerseyMessageReceiver)receiver;

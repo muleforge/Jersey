@@ -2,4 +2,3 @@
 # Test cases listed in this file are not run.
 #
 
-org.mule.transport.jersey.ServletJerseyTest
