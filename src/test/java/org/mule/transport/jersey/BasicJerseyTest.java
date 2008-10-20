@@ -47,6 +47,12 @@ public class BasicJerseyTest extends FunctionalTestCase {
         result = client.send("http://localhost:63081/helloworld/sayHelloWithQuery?name=Dan", "", props);
         assertEquals(200, result.getIntProperty(HttpConnector.HTTP_STATUS_PROPERTY, 0));
         assertEquals("Hello Dan", result.getPayloadAsString());
+
+        props.put("X-Name", "Dan");
+        result = client.send("http://localhost:63081/helloworld/sayHelloWithHeader", "", props);
+        assertEquals(201, result.getIntProperty(HttpConnector.HTTP_STATUS_PROPERTY, 0));
+        assertEquals("Hello Dan", result.getPayloadAsString());
+        assertEquals("Dan", result.getProperty("X-ResponseName"));
     }
     
     @Override
