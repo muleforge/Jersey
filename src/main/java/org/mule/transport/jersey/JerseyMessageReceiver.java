@@ -10,10 +10,10 @@
 
 package org.mule.transport.jersey;
 
+import com.sun.jersey.api.InBoundHeaders;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.InBoundHeaders;
 import com.sun.jersey.spi.container.WebApplication;
 import com.sun.jersey.spi.container.WebApplicationFactory;
 
@@ -70,8 +70,10 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         String host = (String) message.getProperty("Host", endpointUri.getHost());
         String method = (String)message.getProperty(HttpConnector.HTTP_METHOD_PROPERTY);
         InBoundHeaders headers = new InBoundHeaders();
-        
-        
+        for (Object prop : message.getPropertyNames()) {
+            headers.add(prop.toString(), message.getProperty(prop.toString()));
+        }
+                
         URI baseUri = getBaseUri(endpointUri, host);
         URI completeUri = getCompleteUri(endpointUri, host, path, query);
         ContainerRequest req = new ContainerRequest(application,
