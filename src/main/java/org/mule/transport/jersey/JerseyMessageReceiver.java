@@ -16,6 +16,7 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.WebApplication;
 import com.sun.jersey.spi.container.WebApplicationFactory;
+import com.sun.jersey.spi.service.ComponentProvider;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -122,19 +123,24 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     public void doConnect() throws Exception {
         final Set<Class<?>> resources = new HashSet<Class<?>>();
         
+        Class c;
         try {
-            Class c = ((JavaComponent) service.getComponent()).getObjectType();
+            c = ((JavaComponent) service.getComponent()).getObjectType();
             resources.add(c);
         } catch (Exception e) {
             throw new ConnectException(e, this);
         }
         
         DefaultResourceConfig resourceConfig = new DefaultResourceConfig(resources);
-        
+
         application = WebApplicationFactory.createWebApplication();
-        application.initiate(resourceConfig);
+        application.initiate(resourceConfig, getComponentProvider(c));
         
         ((JerseyConnector) connector).registerReceiverWithMuleService(this, getEndpointURI());
+    }
+
+    protected ComponentProvider getComponentProvider(Class resourceType) {
+        return new MuleComponentProvider(service, resourceType);
     }
 
     public void doDisconnect() throws ConnectException {

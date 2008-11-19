@@ -18,7 +18,6 @@ import org.mule.api.context.notification.MuleContextNotificationListener;
 import org.mule.api.context.notification.ServerNotification;
 import org.mule.api.endpoint.EndpointBuilder;
 import org.mule.api.endpoint.EndpointURI;
-import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.service.Service;
@@ -29,7 +28,6 @@ import org.mule.endpoint.EndpointURIEndpointBuilder;
 import org.mule.model.seda.SedaService;
 import org.mule.object.SingletonObjectFactory;
 import org.mule.routing.inbound.DefaultInboundRouterCollection;
-import org.mule.transformer.TransformerUtils;
 import org.mule.transport.AbstractConnector;
 
 /**
@@ -69,8 +67,7 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
 
         boolean sync = receiver.getEndpoint().isSynchronous();
 
-        EndpointBuilder serviceEndpointbuilder = new EndpointURIEndpointBuilder(endpoint,
-                                                                                muleContext);
+        EndpointBuilder serviceEndpointbuilder = new EndpointURIEndpointBuilder(endpoint, muleContext);
         serviceEndpointbuilder.setSynchronous(sync);
         serviceEndpointbuilder.setName(ep.getScheme() + ":" + name);
         // Set the transformers on the endpoint too
