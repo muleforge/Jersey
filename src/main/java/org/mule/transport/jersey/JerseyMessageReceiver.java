@@ -48,6 +48,9 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     protected transient Log logger = LogFactory.getLog(getClass());
     
     private WebApplication application;
+    private boolean applySecurityToProtocol;
+    private boolean applyTransformersToProtocol;
+    private boolean applyFiltersToProtocol;
     
     public JerseyMessageReceiver(Connector connector, 
                                  Service service, 
@@ -89,7 +92,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
             logger.debug("Complete URI: " + completeUri);
         }
         
-        MuleResponseWriter writer = new MuleResponseWriter();
+        MuleResponseWriter writer = new MuleResponseWriter(message);
         ContainerResponse res = new ContainerResponse(application, req, writer);
         
         application.handleRequest(req, res);
@@ -112,6 +115,9 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
             path = "/" + endpointUri.getHost() + "/";
         } else {
             path = endpointUri.getPath();
+        }
+        if (!path.endsWith("/")) {
+            path += "/";
         }
         return new URI(endpointUri.getScheme() + "://" + host + path);
     }
@@ -157,6 +163,18 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
 
     public void doDispose() {
 
+    }
+
+    public boolean isApplySecurityToProtocol() {
+        return applySecurityToProtocol;
+    }
+
+    public boolean isApplyTransformersToProtocol() {
+        return applyTransformersToProtocol;
+    }
+
+    public boolean isApplyFiltersToProtocol() {
+        return applyFiltersToProtocol;
     }
 
 }

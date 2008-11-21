@@ -34,6 +34,8 @@ import org.mule.transport.AbstractConnector;
  * 
  */
 public class JerseyConnector extends AbstractConnector implements MuleContextNotificationListener {
+    public static final String PROTOCOL_CONNECTOR = "protocolConnector";
+    public static final String JERSEY_RESPONSE = "jersey.response";
     private List<SedaService> services = new ArrayList<SedaService>();
 
     public JerseyConnector() {
@@ -65,43 +67,77 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
         // endpointUri if the port is different
         String endpoint = receiver.getEndpointURI().getAddress();
 
-        boolean sync = receiver.getEndpoint().isSynchronous();
+        InboundEndpoint originalEndpoint = receiver.getEndpoint();
+        boolean sync = originalEndpoint.isSynchronous();
 
-        EndpointBuilder serviceEndpointbuilder = new EndpointURIEndpointBuilder(endpoint, muleContext);
-        serviceEndpointbuilder.setSynchronous(sync);
-        serviceEndpointbuilder.setName(ep.getScheme() + ":" + name);
-        // Set the transformers on the endpoint too
-        serviceEndpointbuilder.setTransformers(receiver.getEndpoint().getTransformers().isEmpty() ? null
-                                                                                                  : receiver.getEndpoint().getTransformers());
-        serviceEndpointbuilder.setResponseTransformers(receiver.getEndpoint().getResponseTransformers().isEmpty() ? null
-                                                                                                                 : receiver.getEndpoint().getResponseTransformers());
-        // set the filter on the axis endpoint on the real receiver endpoint
-        serviceEndpointbuilder.setFilter(receiver.getEndpoint().getFilter());
-        // set the Security filter on the axis endpoint on the real receiver
-        // endpoint
-        serviceEndpointbuilder.setSecurityFilter(receiver.getEndpoint().getSecurityFilter());
-    
-        // TODO Do we really need to modify the existing receiver endpoint? What happnes if we don't security,
-        // filters and transformers will get invoked twice?
-        EndpointBuilder receiverEndpointBuilder = new EndpointURIEndpointBuilder(receiver.getEndpoint(),
+        EndpointBuilder protocolEndpointBuilder = new EndpointURIEndpointBuilder(endpoint, muleContext);
+        protocolEndpointBuilder.setSynchronous(sync);
+        protocolEndpointBuilder.setName(ep.getScheme() + ":" + name);
+        
+        EndpointBuilder receiverEndpointBuilder = new EndpointURIEndpointBuilder(originalEndpoint,
             muleContext);
-        // Remove the Axis filter now
-        receiverEndpointBuilder.setFilter(null);
-        // Remove the Axis Receiver Security filter now
-        receiverEndpointBuilder.setSecurityFilter(null);
-    
-        InboundEndpoint serviceEndpoint = muleContext.getRegistry()
+        
+        // Apply the transformers to the correct endpoint
+        EndpointBuilder transformerEndpoint;
+        if (jReceiver.isApplyTransformersToProtocol())
+        {
+            transformerEndpoint = protocolEndpointBuilder; 
+            receiverEndpointBuilder.setTransformers(null);
+            receiverEndpointBuilder.setResponseTransformers(null);
+        }
+        else
+        {  
+            transformerEndpoint = receiverEndpointBuilder;
+        }
+        transformerEndpoint.setTransformers(originalEndpoint.getTransformers());
+        transformerEndpoint.setResponseTransformers(originalEndpoint.getResponseTransformers());
+        
+        // apply the filters to the correct endpoint
+        EndpointBuilder filterEndpoint;
+        if (jReceiver.isApplyFiltersToProtocol())
+        {
+            filterEndpoint = protocolEndpointBuilder;   
+            receiverEndpointBuilder.setFilter(null);                                                                                                
+        }
+        else
+        {  
+            filterEndpoint = receiverEndpointBuilder;
+        }
+        filterEndpoint.setFilter(originalEndpoint.getFilter());
+        
+        // apply the security filter to the correct endpoint
+        EndpointBuilder secFilterEndpoint;
+        if (jReceiver.isApplySecurityToProtocol())
+        {
+            secFilterEndpoint = protocolEndpointBuilder;   
+            receiverEndpointBuilder.setSecurityFilter(null);                                                                                               
+        }
+        else
+        {  
+            secFilterEndpoint = receiverEndpointBuilder;
+        }             
+        secFilterEndpoint.setSecurityFilter(originalEndpoint.getSecurityFilter());
+
+        String connectorName = (String) originalEndpoint.getProperty(PROTOCOL_CONNECTOR);
+        if (connectorName != null) 
+        {
+            protocolEndpointBuilder.setConnector(muleContext.getRegistry().lookupConnector(connectorName));
+        }
+        
+        InboundEndpoint protocolEndpoint = muleContext.getRegistry()
             .lookupEndpointFactory()
-            .getInboundEndpoint(serviceEndpointbuilder);
-    
+            .getInboundEndpoint(protocolEndpointBuilder);
+
         InboundEndpoint receiverEndpoint = muleContext.getRegistry()
             .lookupEndpointFactory()
             .getInboundEndpoint(receiverEndpointBuilder);
-    
+
         receiver.setEndpoint(receiverEndpoint);
-    
+        
         c.setInboundRouter(new DefaultInboundRouterCollection());
-        c.getInboundRouter().addEndpoint(serviceEndpoint);
+        c.getInboundRouter().addEndpoint(protocolEndpoint);
+        
+        c.setOutboundRouter(jReceiver.getService().getOutboundRouter());
         
         services.add(c);
     }
