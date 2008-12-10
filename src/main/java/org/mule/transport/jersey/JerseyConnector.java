@@ -132,7 +132,8 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
             .lookupEndpointFactory()
             .getInboundEndpoint(receiverEndpointBuilder);
 
-        receiver.setEndpoint(receiverEndpoint);
+        jReceiver.setEndpoint(receiverEndpoint);
+        jReceiver.setProtocolEndpoint(protocolEndpoint);
         
         c.setInboundRouter(new DefaultInboundRouterCollection());
         c.getInboundRouter().addEndpoint(protocolEndpoint);

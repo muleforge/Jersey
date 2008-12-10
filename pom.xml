@@ -7,7 +7,7 @@
     <version>1.2-SNAPSHOT</version>
     <description>Jersey</description>
     <properties>
-        <mule.version>2.1.1</mule.version>
+        <mule.version>2.1.2</mule.version>
     </properties>
     <build>
         <extensions>
