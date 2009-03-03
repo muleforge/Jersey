@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleEventContext;
@@ -142,6 +144,11 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     }
     
     public void doConnect() throws Exception {
+        Map endpointProps = endpoint.getProperties();
+        applyFiltersToProtocol = isTrue((String) endpointProps.get("applyFiltersToProtocol"), true);
+        applySecurityToProtocol = isTrue((String) endpointProps.get("applySecurityToProtocol"), true);
+        applyTransformersToProtocol = isTrue((String) endpointProps.get("applyTransformersToProtocol"), true);
+        
         final Set<Class<?>> resources = new HashSet<Class<?>>();
         
         Class c;
@@ -158,6 +165,13 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         application.initiate(resourceConfig, getComponentProvider(c));
         
         ((JerseyConnector) connector).registerReceiverWithMuleService(this, getEndpointURI());
+    }
+
+    private boolean isTrue(String string, boolean defaultValue)
+    {
+        if (string == null) return defaultValue;
+        
+        return BooleanUtils.toBoolean(string);
     }
 
     protected ComponentProvider getComponentProvider(Class resourceType) {

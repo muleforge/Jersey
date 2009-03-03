@@ -89,8 +89,19 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
         {  
             transformerEndpoint = receiverEndpointBuilder;
         }
-        transformerEndpoint.setTransformers(originalEndpoint.getTransformers());
-        transformerEndpoint.setResponseTransformers(originalEndpoint.getResponseTransformers());
+
+        // Ensure that the transformers aren't empty before setting them. Otherwise Mule will get confused
+        // and won't add the default transformers.
+        if (originalEndpoint.getTransformers() != null && !originalEndpoint.getTransformers().isEmpty())
+        {
+            transformerEndpoint.setTransformers(originalEndpoint.getTransformers());
+        }
+
+        if (originalEndpoint.getResponseTransformers() != null && !originalEndpoint.getResponseTransformers().isEmpty())
+        {
+            transformerEndpoint.setResponseTransformers(originalEndpoint.getResponseTransformers());
+        }
+        
         
         // apply the filters to the correct endpoint
         EndpointBuilder filterEndpoint;
@@ -183,6 +194,19 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
             muleContext.registerListener(this);
         } catch (Exception e) {
             throw new InitialisationException(e, this);
+        }
+    }
+    
+    public boolean isSyncEnabled(String protocol)
+    {
+        protocol = protocol.toLowerCase();
+        if (protocol.equals("http") || protocol.equals("https") || protocol.equals("ssl") || protocol.equals("tcp") || protocol.equals("servlet"))
+        {
+            return true;
+        }
+        else
+        {
+            return super.isSyncEnabled(protocol);
         }
     }
 
