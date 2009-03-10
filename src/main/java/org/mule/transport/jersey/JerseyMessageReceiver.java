@@ -41,7 +41,6 @@ import org.mule.api.transport.Connector;
 import org.mule.transport.AbstractMessageReceiver;
 import org.mule.transport.ConnectException;
 import org.mule.transport.http.HttpConnector;
-import org.mule.transport.servlet.ServletConnector;
 
 /**
  * <code>JerseyMessageReceiver</code> TODO document
@@ -55,8 +54,6 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     private boolean applyTransformersToProtocol;
     private boolean applyFiltersToProtocol;
 
-    private InboundEndpoint protocolEndpoint;
-    
     public JerseyMessageReceiver(Connector connector, 
                                  Service service, 
                                  InboundEndpoint endpoint)
@@ -68,6 +65,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         MuleMessage message = event.getMessage();
         
         String path = (String) message.getProperty(HttpConnector.HTTP_REQUEST_PROPERTY);
+        String contextPath = (String) message.getProperty(HttpConnector.HTTP_CONTEXT_PATH_PROPERTY);
         String query = null;
         int queryIdx = path.indexOf('?');
         if (queryIdx != -1) {
@@ -83,9 +81,15 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
             headers.add(prop.toString(), message.getProperty(prop.toString()));
         }
                 
+        String scheme;
+        if ("servlet".equals(endpointUri.getScheme())) {
+            scheme = "http";
+        } else {
+            scheme = endpointUri.getScheme();
+        }
         
-        URI baseUri = getBaseUri(endpointUri, protocolEndpoint.getConnector(), host);
-        URI completeUri = getCompleteUri(endpointUri, host, path, query);
+        URI baseUri = getBaseUri(endpointUri, scheme, host, contextPath);
+        URI completeUri = getCompleteUri(endpointUri, scheme, host, path, query);
         ContainerRequest req = new ContainerRequest(application,
                                                     method,
                                                     baseUri,
@@ -106,9 +110,9 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         return writer.getMessage();
     }
 
-    protected static URI getCompleteUri(EndpointURI endpointUri, String host, String path, String query) throws URISyntaxException 
+    protected static URI getCompleteUri(EndpointURI endpointUri, String scheme, String host, String path, String query) throws URISyntaxException 
     {
-        String uri = endpointUri.getScheme() + "://" + host + path;
+        String uri = scheme + "://" + host + path;
         if (query != null) {
             uri += "?" + query;
         }
@@ -116,27 +120,12 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         return new URI(uri);
     }
 
-    protected static URI getBaseUri(EndpointURI endpointUri, Connector connector, String host) throws URISyntaxException {
-        if ("servlet".equals(endpointUri.getScheme())) {
-            String servletUrl = ((ServletConnector)connector).getServletUrl();
-            
-            if (!servletUrl.endsWith("/")) {
-                servletUrl += "/";
-            }
-            servletUrl += endpointUri.getHost();
-
-            if (!servletUrl.endsWith("/")) {
-                servletUrl += "/";
-            }
-            
-            return new URI(servletUrl);
-        } else {
-            String path = endpointUri.getPath();
-            if (!path.endsWith("/")) {
-                path += "/";
-            }
-            return new URI(endpointUri.getScheme() + "://" + host + path);
+    protected static URI getBaseUri(EndpointURI endpointUri, String scheme, String host, String contextPath) throws URISyntaxException {
+        if (!contextPath.endsWith("/")) {
+            contextPath += "/";
         }
+        
+        return new URI(scheme + "://" + host + contextPath);
     }
     
     protected static InputStream getInputStream(MuleMessage message) throws TransformerException {
@@ -178,22 +167,6 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         return new MuleComponentProvider(service, resourceType);
     }
 
-    public void doDisconnect() throws ConnectException {
-        
-    }
-
-    public void doStart() {
-       
-    }
-
-    public void doStop() {
-        
-    }
-
-    public void doDispose() {
-
-    }
-
     public boolean isApplySecurityToProtocol() {
         return applySecurityToProtocol;
     }
@@ -204,11 +177,6 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
 
     public boolean isApplyFiltersToProtocol() {
         return applyFiltersToProtocol;
-    }
-
-    public void setProtocolEndpoint(InboundEndpoint protocolEndpoint) {
-        this.protocolEndpoint = protocolEndpoint;
-        
     }
 
 }

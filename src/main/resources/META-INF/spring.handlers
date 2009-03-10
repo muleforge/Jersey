@@ -1,1 +1,1 @@
-http\://www.mulesource.org/schema/mule/jersey/2.1=org.mule.transport.jersey.config.JerseyNamespaceHandler
+http\://www.mulesource.org/schema/mule/jersey/2.2=org.mule.transport.jersey.config.JerseyNamespaceHandler

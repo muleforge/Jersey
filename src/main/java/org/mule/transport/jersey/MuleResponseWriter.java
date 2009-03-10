@@ -15,7 +15,6 @@ import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.OutputHandler;
 import org.mule.transport.http.HttpConnector;
-import org.mule.transport.http.HttpConstants;
 
 public class MuleResponseWriter implements ContainerResponseWriter {
 
@@ -29,6 +28,7 @@ public class MuleResponseWriter implements ContainerResponseWriter {
 
             public void write(MuleEvent arg0, OutputStream realOut) throws IOException {
                 realOut.write(out.toByteArray());
+                realOut.flush();
             }
             
         }, request);

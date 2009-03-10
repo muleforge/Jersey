@@ -144,7 +144,6 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
             .getInboundEndpoint(receiverEndpointBuilder);
 
         jReceiver.setEndpoint(receiverEndpoint);
-        jReceiver.setProtocolEndpoint(protocolEndpoint);
         
         c.setInboundRouter(new DefaultInboundRouterCollection());
         c.getInboundRouter().addEndpoint(protocolEndpoint);
@@ -196,19 +195,19 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
             throw new InitialisationException(e, this);
         }
     }
-    
-    public boolean isSyncEnabled(String protocol)
-    {
-        protocol = protocol.toLowerCase();
-        if (protocol.equals("http") || protocol.equals("https") || protocol.equals("ssl") || protocol.equals("tcp") || protocol.equals("servlet"))
-        {
-            return true;
-        }
-        else
-        {
-            return super.isSyncEnabled(protocol);
-        }
-    }
+//    
+//    public boolean isSyncEnabled(String protocol)
+//    {
+//        protocol = protocol.toLowerCase();
+//        if (protocol.equals("http") || protocol.equals("https") || protocol.equals("ssl") || protocol.equals("tcp") || protocol.equals("servlet"))
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            return super.isSyncEnabled(protocol);
+//        }
+//    }
 
     @Override
     protected void doStart() throws MuleException {
