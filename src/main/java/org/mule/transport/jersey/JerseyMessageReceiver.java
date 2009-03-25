@@ -10,13 +10,13 @@
 
 package org.mule.transport.jersey;
 
-import com.sun.jersey.api.InBoundHeaders;
 import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.core.header.InBoundHeaders;
+import com.sun.jersey.core.spi.component.ioc.IoCComponentProviderFactory;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.WebApplication;
 import com.sun.jersey.spi.container.WebApplicationFactory;
-import com.sun.jersey.spi.service.ComponentProvider;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -78,7 +78,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         String method = (String)message.getProperty(HttpConnector.HTTP_METHOD_PROPERTY);
         InBoundHeaders headers = new InBoundHeaders();
         for (Object prop : message.getPropertyNames()) {
-            headers.add(prop.toString(), message.getProperty(prop.toString()));
+            headers.add(prop.toString(), message.getProperty(prop.toString()).toString());
         }
                 
         String scheme;
@@ -148,13 +148,18 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
             throw new ConnectException(e, this);
         }
         
-        DefaultResourceConfig resourceConfig = new DefaultResourceConfig(resources);
+        DefaultResourceConfig resourceConfig = createConfiguration(resources);
 
         application = WebApplicationFactory.createWebApplication();
         application.initiate(resourceConfig, getComponentProvider(c));
         
         ((JerseyConnector) connector).registerReceiverWithMuleService(this, getEndpointURI());
     }
+
+    protected DefaultResourceConfig createConfiguration(final Set<Class<?>> resources) {
+        return new DefaultResourceConfig(resources);
+    }
+
 
     private boolean isTrue(String string, boolean defaultValue)
     {
@@ -163,8 +168,8 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         return BooleanUtils.toBoolean(string);
     }
 
-    protected ComponentProvider getComponentProvider(Class resourceType) {
-        return new MuleComponentProvider(service, resourceType);
+    protected IoCComponentProviderFactory getComponentProvider(Class resourceType) {
+        return new MuleComponentProviderFactory(service, resourceType);
     }
 
     public boolean isApplySecurityToProtocol() {

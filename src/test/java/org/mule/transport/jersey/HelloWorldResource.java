@@ -18,6 +18,15 @@ public class HelloWorldResource {
     public String sayHelloWorld() {
         return "Hello World";
     }
+
+    @GET
+    @Produces("application/json")
+    @Path("/sayHelloWithJson/{name}")
+    public HelloBean sayHelloWithJson(@PathParam("name") String name) {
+        HelloBean hello = new HelloBean();
+        hello.setMessage("Hello " + name);
+        return hello;
+    }
     
     @DELETE
     @Produces("text/plain")
