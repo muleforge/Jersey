@@ -102,6 +102,14 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-lgpl</artifactId>
               </exclusion>
+              <exclusion>
+              	<artifactId>stax-api</artifactId>
+              	<groupId>javax.xml.stream</groupId>
+              </exclusion>
+              <exclusion>
+              	<artifactId>stax-api</artifactId>
+              	<groupId>stax</groupId>
+              </exclusion>
             </exclusions>
         </dependency>
         <dependency>
