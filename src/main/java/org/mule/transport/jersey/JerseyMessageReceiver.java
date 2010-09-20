@@ -11,10 +11,8 @@
 package org.mule.transport.jersey;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.header.InBoundHeaders;
 import com.sun.jersey.core.spi.component.ioc.IoCComponentProviderFactory;
-import com.sun.jersey.server.impl.model.method.dispatch.FormDispatchProvider;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.WebApplication;
@@ -26,8 +24,6 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -42,11 +38,9 @@ import org.mule.api.lifecycle.CreateException;
 import org.mule.api.service.Service;
 import org.mule.api.transformer.TransformerException;
 import org.mule.api.transport.Connector;
-import org.mule.api.transport.MessageAdapter;
 import org.mule.transport.AbstractMessageReceiver;
 import org.mule.transport.ConnectException;
 import org.mule.transport.http.HttpConnector;
-import org.mule.transport.servlet.HttpRequestMessageAdapter;
 
 /**
  * <code>JerseyMessageReceiver</code> TODO document
@@ -111,23 +105,6 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         MuleResponseWriter writer = new MuleResponseWriter(message);
         ContainerResponse res = new ContainerResponse(application, req, writer);
         
-        MessageAdapter messageAdapter = message.getAdapter();
-        if (messageAdapter instanceof HttpRequestMessageAdapter) {
-            HttpRequestMessageAdapter httpRequestMessageAdapter = (HttpRequestMessageAdapter) messageAdapter;
-            HttpServletRequest request = httpRequestMessageAdapter.getRequest();
-            if (request.getMethod().equalsIgnoreCase("POST")) {
-                Map requestParameters = request.getParameterMap();
-
-                Form form = new Form();
-                req.getProperties().put(FormDispatchProvider.FORM_PROPERTY, form);
-
-                for (Object keyObject : requestParameters.keySet()) {
-                    String key = (String) keyObject;
-                    form.add(key, request.getParameter(key));
-                }
-            }
-        }
-
         application.handleRequest(req, res);
         
         return writer.getMessage();
