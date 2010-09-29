@@ -11,6 +11,7 @@
 package org.mule.transport.jersey;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.core.header.InBoundHeaders;
 import com.sun.jersey.core.spi.component.ioc.IoCComponentProviderFactory;
 import com.sun.jersey.spi.container.ContainerRequest;
@@ -62,6 +63,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     }
 
     public Object onCall(MuleEventContext event) throws Exception {
+        long start = System.currentTimeMillis();
         MuleMessage message = event.getMessage();
         
         String path = (String) message.getProperty(HttpConnector.HTTP_REQUEST_PROPERTY);
@@ -106,7 +108,10 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         ContainerResponse res = new ContainerResponse(application, req, writer);
         
         application.handleRequest(req, res);
-        
+        long execTime = System.currentTimeMillis() - start;
+
+    	service.getComponent().getStatistics().addExecutionTime(execTime);
+    	
         return writer.getMessage();
     }
 
@@ -147,7 +152,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         } catch (Exception e) {
             throw new ConnectException(e, this);
         }
-        
+                
         DefaultResourceConfig resourceConfig = createConfiguration(resources);
 
         application = WebApplicationFactory.createWebApplication();
@@ -157,7 +162,10 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     }
 
     protected DefaultResourceConfig createConfiguration(final Set<Class<?>> resources) {
-        return new DefaultResourceConfig(resources);
+        PackagesResourceConfig c =  new PackagesResourceConfig("com.sun.jersey.samples.bookstore.resources");
+        
+        return c;
+//        return new DefaultResourceConfig(resources);
     }
 
 
