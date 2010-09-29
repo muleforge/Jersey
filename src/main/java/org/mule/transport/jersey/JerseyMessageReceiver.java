@@ -39,6 +39,7 @@ import org.mule.api.lifecycle.CreateException;
 import org.mule.api.service.Service;
 import org.mule.api.transformer.TransformerException;
 import org.mule.api.transport.Connector;
+import org.mule.management.stats.ComponentStatistics;
 import org.mule.transport.AbstractMessageReceiver;
 import org.mule.transport.ConnectException;
 import org.mule.transport.http.HttpConnector;
@@ -110,7 +111,11 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         application.handleRequest(req, res);
         long execTime = System.currentTimeMillis() - start;
 
-    	service.getComponent().getStatistics().addExecutionTime(execTime);
+    	ComponentStatistics statistics = service.getComponent().getStatistics();
+		if (statistics.isEnabled()) 
+		{
+			statistics.addExecutionTime(execTime);
+		}
     	
         return writer.getMessage();
     }
