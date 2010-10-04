@@ -10,8 +10,22 @@
 
 package org.mule.transport.jersey;
 
+import org.mule.api.MuleEventContext;
+import org.mule.api.MuleMessage;
+import org.mule.api.component.JavaComponent;
+import org.mule.api.endpoint.EndpointURI;
+import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.lifecycle.Callable;
+import org.mule.api.lifecycle.CreateException;
+import org.mule.api.service.Service;
+import org.mule.api.transformer.TransformerException;
+import org.mule.api.transport.Connector;
+import org.mule.management.stats.ComponentStatistics;
+import org.mule.transport.AbstractMessageReceiver;
+import org.mule.transport.ConnectException;
+import org.mule.transport.http.HttpConnector;
+
 import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.core.header.InBoundHeaders;
 import com.sun.jersey.core.spi.component.ioc.IoCComponentProviderFactory;
 import com.sun.jersey.spi.container.ContainerRequest;
@@ -29,20 +43,6 @@ import java.util.Set;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.api.MuleEventContext;
-import org.mule.api.MuleMessage;
-import org.mule.api.component.JavaComponent;
-import org.mule.api.endpoint.EndpointURI;
-import org.mule.api.endpoint.InboundEndpoint;
-import org.mule.api.lifecycle.Callable;
-import org.mule.api.lifecycle.CreateException;
-import org.mule.api.service.Service;
-import org.mule.api.transformer.TransformerException;
-import org.mule.api.transport.Connector;
-import org.mule.management.stats.ComponentStatistics;
-import org.mule.transport.AbstractMessageReceiver;
-import org.mule.transport.ConnectException;
-import org.mule.transport.http.HttpConnector;
 
 /**
  * <code>JerseyMessageReceiver</code> TODO document
@@ -182,10 +182,7 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
     }
 
     protected DefaultResourceConfig createConfiguration(final Set<Class<?>> resources) {
-        PackagesResourceConfig c =  new PackagesResourceConfig("com.sun.jersey.samples.bookstore.resources");
-        
-        return c;
-//        return new DefaultResourceConfig(resources);
+        return new DefaultResourceConfig(resources);
     }
 
 
