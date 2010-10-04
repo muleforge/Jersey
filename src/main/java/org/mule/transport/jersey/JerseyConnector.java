@@ -57,7 +57,7 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
         
         // TODO MULE-2228 Simplify this API
         SedaService c = new SedaService();
-        c.setName("_jerseyConnector" + name + jReceiver.hashCode());
+        c.setName("_internal_jersey" + name + jReceiver.hashCode());
         c.setModel(muleContext.getRegistry().lookupSystemModel());
 
         c.setComponent(new DefaultJavaComponent(new SingletonObjectFactory(jReceiver)));
