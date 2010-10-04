@@ -108,15 +108,30 @@ public class JerseyMessageReceiver extends AbstractMessageReceiver implements Ca
         MuleResponseWriter writer = new MuleResponseWriter(message);
         ContainerResponse res = new ContainerResponse(application, req, writer);
         
-        application.handleRequest(req, res);
-        long execTime = System.currentTimeMillis() - start;
+        
+        try 
+        {
+        	application.handleRequest(req, res);
 
-    	ComponentStatistics statistics = service.getComponent().getStatistics();
-		if (statistics.isEnabled()) 
-		{
-			statistics.addExecutionTime(execTime);
-		}
-    	
+			service.getStatistics().incReceivedEventSync();
+        } 
+        catch (Exception e)
+        {
+        	service.getStatistics().incExecutionError();
+        	throw e;
+        }
+        finally 
+        {
+            long execTime = System.currentTimeMillis() - start;
+
+        	ComponentStatistics statistics = service.getComponent().getStatistics();
+    		if (statistics.isEnabled()) 
+    		{
+    			statistics.addExecutionTime(execTime);
+    		}
+        	
+        }
+
         return writer.getMessage();
     }
 
