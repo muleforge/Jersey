@@ -61,6 +61,7 @@ public class JerseyConnector extends AbstractConnector implements MuleContextNot
         c.setModel(muleContext.getRegistry().lookupSystemModel());
 
         c.setComponent(new DefaultJavaComponent(new SingletonObjectFactory(jReceiver)));
+        c.setExceptionListener(this.getExceptionListener());
 
         // No determine if the endpointUri requires a new connector to be
         // registed in the case of http we only need to register the new
